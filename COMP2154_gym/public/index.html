@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Gym Tracker Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-container">
+            <h1 class="nav-title">Visual Gym Tracker Pro</h1>
+            <div class="nav-links">
+                <button class="nav-btn" onclick="showDashboard()">Dashboard</button>
+                <button class="nav-btn" onclick="showExercises()">Exercises</button>
+                <button class="nav-btn" onclick="showProgress()">Progress</button>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="auth-container">
+        <div class="auth-card">
+            <h2 id="auth-title">Login to Visual Gym Tracker Pro</h2>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form" style="display: none;">
+                <input type="text" id="register-username" placeholder="Username" required>
+                <input type="email" id="register-email" placeholder="Email" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <button type="submit">Register</button>
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" style="display: none;">
+        <!-- Dashboard -->
+        <div id="dashboard" class="section">
+            <div class="dashboard-header">
+                <h2>Workout Dashboard</h2>
+                <input type="date" id="workout-date" onchange="loadWorkouts()">
+            </div>
+            
+            <div class="workout-container">
+                <div class="add-exercise-section">
+                    <h3>Add Exercise to Workout</h3>
+                    <select id="exercise-select">
+                        <option value="">Select an exercise...</option>
+                    </select>
+                    <div class="exercise-inputs">
+                        <input type="number" id="planned-sets" placeholder="Sets" min="1" value="3">
+                        <input type="number" id="planned-reps" placeholder="Reps" min="1" value="10">
+                        <input type="number" id="planned-weight" placeholder="Weight (lbs)" min="0" step="0.5" value="0">
+                        <button onclick="addExerciseToWorkout()">Add to Workout</button>
+                    </div>
+                </div>
+
+                <div class="workout-list-header">
+                    <h3>Today's Workout</h3>
+                </div>
+                <div id="workout-list" class="workout-list">
+                    <!-- Workout exercises will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercises Section -->
+        <div id="exercises" class="section" style="display: none;">
+            <div class="exercises-header">
+                <h2>Exercise Library</h2>
+                <button onclick="showAddExerciseForm()">Add Custom Exercise</button>
+            </div>
+
+            <!-- Add Exercise Form -->
+            <div id="add-exercise-form" class="add-exercise-form" style="display: none;">
+                <h3>Add Custom Exercise</h3>
+                <input type="text" id="exercise-name" placeholder="Exercise Name" required>
+                <input type="text" id="muscle-group" placeholder="Muscle Group" required>
+                <input type="url" id="image-url" placeholder="Image URL (optional)">
+                <input type="url" id="tutorial-url" placeholder="Tutorial URL (optional)">
+                <div class="form-buttons">
+                    <button onclick="addCustomExercise()">Add Exercise</button>
+                    <button onclick="hideAddExerciseForm()">Cancel</button>
+                </div>
+            </div>
+
+            <div id="exercises-grid" class="exercises-grid">
+                <!-- Exercises will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progress" class="section" style="display: none;">
+            <h2>Progress Tracking</h2>
+            <select id="progress-exercise-select" onchange="loadProgressChart()">
+                <option value="">Select exercise to view progress...</option>
+            </select>
+            <div class="chart-container">
+                <canvas id="progress-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Workout Timer Modal -->
+        <div id="timer-modal" class="modal" style="display: none;">
+            <div class="modal-content timer-modal-large">
+                <button class="modal-close-btn" onclick="closeTimer()">×</button>
+                
+                <div class="timer-modal-grid">
+                    <!-- Video Section -->
+                    <div class="timer-video-section">
+                        <h3 class="timer-modal-title">Exercise Tutorial</h3>
+                        <div id="timer-video-container" class="video-container">
+                            <iframe id="timer-video" 
+                                    width="100%" 
+                                    height="315" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div id="timer-exercise-info" class="exercise-info-box">
+                            <p><strong>Exercise:</strong> <span id="timer-exercise-name"></span></p>
+                            <p><strong>Muscle Group:</strong> <span id="timer-muscle-group"></span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timer Section -->
+                    <div class="timer-section">
+                        <h3 class="timer-modal-title" id="timer-set-title">Workout Timer</h3>
+                        <p class="timer-info">Rest between sets</p>
+                        <div class="timer-display" id="timer-display">00:30</div>
+                        <div class="timer-controls">
+                            <button id="start-timer" onclick="startTimer()">Start Rest</button>
+                            <button id="pause-timer" onclick="pauseTimer()" style="display: none;">Pause</button>
+                            <button id="reset-timer" onclick="resetTimer()">Reset</button>
+                            <button onclick="closeTimer()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
