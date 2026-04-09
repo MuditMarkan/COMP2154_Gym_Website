@@ -200,14 +200,16 @@ async function loadExercisesGrid() {
         card.className = 'exercise-card';
         
         card.innerHTML = `
-            <img src="${exercise.image_url || 'https://via.placeholder.com/300x150?text=Exercise'}" 
+            <img src="${exercise.image_url || 'https://via.placeholder.com/300x160/1a1a1a/FF6B00?text=Exercise'}" 
                  alt="${exercise.name}" class="exercise-image" 
-                 onerror="this.src='https://via.placeholder.com/300x150?text=Exercise'">
-            <h3>${exercise.name}</h3>
-            <p class="muscle-group">${exercise.muscle_group}</p>
-            <div class="exercise-actions">
-                ${exercise.tutorial_url ? `<button class="btn-tutorial" onclick="window.open('${exercise.tutorial_url}', '_blank')">Tutorial</button>` : ''}
-                ${exercise.is_custom ? `<button class="btn-delete" onclick="deleteExercise(${exercise.id})">Delete</button>` : ''}
+                 onerror="this.src='https://via.placeholder.com/300x160/1a1a1a/FF6B00?text=Exercise'">
+            <div class="exercise-card-body">
+                <h3>${exercise.name}</h3>
+                <span class="muscle-group-badge">${exercise.muscle_group}</span>
+                <div class="exercise-actions">
+                    ${exercise.tutorial_url ? `<button class="btn-tutorial" onclick="window.open('${exercise.tutorial_url}', '_blank')">▶ Tutorial</button>` : ''}
+                    ${exercise.is_custom ? `<button class="btn-delete" onclick="deleteExercise('${exercise.id}')">✕ Delete</button>` : ''}
+                </div>
             </div>
         `;
         
@@ -306,7 +308,7 @@ function displayWorkouts() {
     container.innerHTML = '';
 
     if (currentWorkouts.length === 0) {
-        container.innerHTML = '<p>No workouts scheduled for this date. Add exercises above to get started!</p>';
+        container.innerHTML = '<div class="empty-state">No workouts scheduled for this date.<br>Add exercises above to get started 💪</div>';
         return;
     }
 
@@ -654,17 +656,31 @@ function displayProgressChart(history) {
             datasets: [{
                 label: 'Weight (lbs)',
                 data: weights,
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                tension: 0.1
+                borderColor: '#FF6B00',
+                backgroundColor: 'rgba(255, 107, 0, 0.1)',
+                pointBackgroundColor: '#FF6B00',
+                pointBorderColor: '#FFD700',
+                pointRadius: 5,
+                tension: 0.3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#F0F0F0' }
+                }
+            },
             scales: {
+                x: {
+                    ticks: { color: '#999' },
+                    grid: { color: '#2E2E2E' }
+                },
                 y: {
-                    beginAtZero: false
+                    beginAtZero: false,
+                    ticks: { color: '#999' },
+                    grid: { color: '#2E2E2E' }
                 }
             }
         }
